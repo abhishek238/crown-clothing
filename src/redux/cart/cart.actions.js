@@ -10,7 +10,7 @@ export const addCartItem = item => ({
     payload: item
 });
 
-export const removeCartItem = itemId => ({
+export const removeCartItem = item => ({
     type: CartActionTypes.REMOVE_CART_ITEM,
-    payload: itemId
+    payload: item
 });
