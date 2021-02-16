@@ -1,19 +1,44 @@
 import React from 'react'
 import './sign-up.styles.scss';
+import FormInput from "../form-input/form-input.component";
+import CustomButton from "../custom-button/custom-button.component";
+import { auth, createUserProfileDocument } from '../../firebase/firebase.util';
 
 class SignUp extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = {
+            displayName: '',
             email: '',
             password: '',
+            confirmPassword: '',
         };
     }
 
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
+        const {displayName, email, password, confirmPassword} = this.state;
+
+        if(password !== confirmPassword){
+            alert('Password Does not matches');
+            return
+        }
+        
+        try {
+            const { user } = await auth.createUserWithEmailAndPassword(email, password);
+            await createUserProfileDocument(user, {displayName});
+            this.setState({
+                displayName: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+            });
+
+        } catch (err) {
+            console.log(err);
+        }
+
         this.setState({email: '', password: ''});
     }
 
@@ -23,19 +48,24 @@ class SignUp extends React.Component {
     }
 
     render() {
+        const {displayName, email, password, confirmPassword} = this.state;
         return (
-            <div className={'sign-in'}>
-                <h1>I already have an account</h1>
-                <span>Sign in with your email and password</span>
+            <div className={'sign-up'}>
+                <h1 className={'title'}>I don't have an account</h1>
+                <span>Sign up with your email and password</span>
 
-                <form action="">
-                    <input name={'email'} type={'email'} value={this.state.email} required={true}
-                           onChange={this.handleChange}/>
-                    <label htmlFor="email">Email</label>
-                    <input name={'password'} type={'password'} value={this.state.password} required={true}
-                           onChange={this.handleChange}/>
-                    <label htmlFor="password">Password</label>
-                    <input type={'submit'} value={"Submit Form"}/>
+                <form className={'sign-up-form'} onSubmit={this.handleSubmit}>
+                    <FormInput name={'displayName'} type={'text'} value={displayName} required={true} label={'Display Name'}
+                               handleChange={this.handleChange}/>
+                    <FormInput name={'email'} type={'email'} value={email} required={true} label={'Email'}
+                               handleChange={this.handleChange}/>
+                    <FormInput name={'password'} type={'password'} value={password} required={true}
+                               label={'Password'} handleChange={this.handleChange}/>
+                    <FormInput name={'confirmPassword'} type={'password'} value={confirmPassword} required={true}
+                               label={'Confirm Password'} handleChange={this.handleChange}/>
+                    <div className="buttons">
+                        <CustomButton type={'submit'}>Sign Up</CustomButton>
+                    </div>
                 </form>
             </div>
         )
