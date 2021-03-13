@@ -2,9 +2,9 @@ import {createStore, applyMiddleware} from "redux";
 import {persistStore} from "redux-persist";
 import logger from 'redux-logger';
 import rootReducer from './root-reducer';
+import thunk from "redux-thunk";
 
-
-const middlewares = [];
+const middlewares = [thunk];
 
 // only if the development environment, add the logged for the redux related operations!!
 if (process.env.NODE_ENV === 'development') {
